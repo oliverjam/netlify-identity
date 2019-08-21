@@ -34,6 +34,8 @@ function App() {
       if (user.user_metadata.todos) {
         setTodos(user.user_metadata.todos);
       }
+    } else {
+      setAuth("loggedOut");
     }
   }
 
