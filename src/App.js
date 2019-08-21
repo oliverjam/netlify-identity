@@ -56,7 +56,7 @@ function App() {
   function addTodo(text) {
     const id = getId();
     const user = netlifyIdentity.currentUser();
-    const oldTodos = user.user_metadata.todos;
+    const oldTodos = user.user_metadata.todos || [];
     user
       .update({ data: { todos: [...oldTodos, { id, text }] } })
       .then(updatedUser => {
