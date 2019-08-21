@@ -1,24 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import netlifyIdentity from "netlify-identity-widget";
 
 function App() {
+  const [user, setUser] = React.useState(null);
+  React.useEffect(() => {
+    // Set up identity when app loads
+    netlifyIdentity.init();
+
+    // get current user (if they're already logged in)
+    const netlifyUser = netlifyIdentity.currentUser();
+    if (netlifyUser) setUser(netlifyUser);
+
+    // when they log in via the popup put the user into state
+    netlifyIdentity.on("login", () => {
+      netlifyIdentity.close();
+      setUser(netlifyUser);
+    });
+
+    // when they log out via the popup remove the user from the state
+    netlifyIdentity.on("logout", () => {
+      netlifyIdentity.close();
+      setUser(null);
+    });
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {user ? (
+        <button onClick={() => netlifyIdentity.logout()}>Log out</button>
+      ) : (
+        <button onClick={() => netlifyIdentity.open()}>Log in</button>
+      )}
+      <pre>{JSON.stringify(user, null, 2)}</pre>
     </div>
   );
 }
